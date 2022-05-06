@@ -1,3 +1,4 @@
+//imports
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -10,17 +11,15 @@ import {
   RefreshControl,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
+//app
 const App = () => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState();
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
-  }, []);
-
+  //get
   useEffect(() => {
     fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&sparkline=false"
@@ -31,6 +30,34 @@ const App = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  //values positive or negative in 24 hours
+  const value24H = (price_change_percentage_24h) => {
+    if (price_change_percentage_24h > 0) {
+      return styles.textGreen;
+    } else {
+      return styles.textRed;
+    }
+  };
+
+  //refresh
+  const pullMe = () => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
+  //toast (not enabled)
+  const showToast = () => {
+    Toast.show({
+      type: "success",
+      text1: "Actualizado",
+      text2: "Puede ver los nuevos cambios 🔃",
+    });
+  };
+
+  //styles
   const deviceWidth = Math.round(Dimensions.get("window").width);
   const styles = StyleSheet.create({
     cardContainer: {
@@ -60,59 +87,53 @@ const App = () => {
     },
     scrollView: {
       flex: 1,
-      backgroundColor: 'pink',
-      alignItems: 'center',
-      justifyContent: 'center',
+      backgroundColor: "pink",
+      alignItems: "center",
+      justifyContent: "center",
     },
   });
 
-  const value24H = (price_change_percentage_24h) => {
-    if (price_change_percentage_24h > 0) {
-      return styles.textGreen;
-    } else {
-      return styles.textRed;
-    }
-  };
-
+  //return
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
         contentContainerStyle={styles.scrollView}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={pullMe} />
         }
-      ></ScrollView>
-      <View>
-        {isLoading ? (
-          <Text>Loading...</Text>
-        ) : (
-          <FlatList
-            data={data}
-            keyExtractor={({ id }, index) => id}
-            renderItem={({ item }) => (
-              <View style={styles.cardContainer}>
-                <Text style={styles.textContainer}>
-                  {"Nombre del coin: " + item.id}
-                </Text>
-                <Text style={styles.textContainer}>
-                  {" Precio actual: $" + item.current_price}
-                </Text>
-                <Text style={value24H(item.price_change_percentage_24h)}>
-                  {" Cambio de precio en las ultimas 24h: " +
-                    item.price_change_percentage_24h +
-                    "%"}
-                </Text>
-                <Image
-                  style={{ width: 35, height: 35 }}
-                  source={{
-                    uri: item.image,
-                  }}
-                />
-              </View>
-            )}
-          />
-        )}
-      </View>
+      >
+        <View>
+          {isLoading ? (
+            <Text>Loading...</Text>
+          ) : (
+            <FlatList
+              data={data}
+              keyExtractor={({ id }, index) => id}
+              renderItem={({ item }) => (
+                <View style={styles.cardContainer}>
+                  <Text style={styles.textContainer}>
+                    {"Nombre del coin: " + item.id}
+                  </Text>
+                  <Text style={styles.textContainer}>
+                    {" Precio actual: $" + item.current_price}
+                  </Text>
+                  <Text style={value24H(item.price_change_percentage_24h)}>
+                    {" Cambio de precio en las ultimas 24h: " +
+                      item.price_change_percentage_24h +
+                      "%"}
+                  </Text>
+                  <Image
+                    style={{ width: 35, height: 35 }}
+                    source={{
+                      uri: item.image,
+                    }}
+                  />
+                </View>
+              )}
+            />
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
