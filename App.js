@@ -18,8 +18,8 @@ const App = () => {
   const [data, setData] = useState();
   const [refreshing, setRefreshing] = useState(false);
 
-  //get api
-  const dataFetch = ()=>{() => {
+  //useEffect
+  useEffect(() => {
     fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&sparkline=false"
     )
@@ -27,13 +27,8 @@ const App = () => {
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
-  }, []
-
-  }
-
-  //useEffect
-  useEffect( dataFetch);
-
+  }, []);
+  
   //values positive or negative in 24 hours
   const value24H = (price_change_percentage_24h) => {
     if (price_change_percentage_24h > 0) {
