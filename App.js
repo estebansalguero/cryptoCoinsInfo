@@ -11,7 +11,6 @@ import {
   RefreshControl,
   View,
 } from "react-native";
-import Toast from "react-native-toast-message";
 
 //app
 const App = () => {
@@ -19,8 +18,8 @@ const App = () => {
   const [data, setData] = useState();
   const [refreshing, setRefreshing] = useState(false);
 
-  //get
-  useEffect(() => {
+  //get api
+  const dataFetch = ()=>{() => {
     fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&sparkline=false"
     )
@@ -28,7 +27,12 @@ const App = () => {
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
-  }, []);
+  }, []
+
+  }
+
+  //useEffect
+  useEffect( dataFetch);
 
   //values positive or negative in 24 hours
   const value24H = (price_change_percentage_24h) => {
@@ -42,19 +46,9 @@ const App = () => {
   //refresh
   const pullMe = () => {
     setRefreshing(true);
-
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
-  };
-
-  //toast (not enabled)
-  const showToast = () => {
-    Toast.show({
-      type: "success",
-      text1: "Actualizado",
-      text2: "Puede ver los nuevos cambios 🔃",
-    });
   };
 
   //styles
