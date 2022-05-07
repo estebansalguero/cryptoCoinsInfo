@@ -28,7 +28,7 @@ const App = () => {
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
-  
+
   //values positive or negative in 24 hours
   const value24H = (price_change_percentage_24h) => {
     if (price_change_percentage_24h > 0) {
@@ -101,15 +101,18 @@ const App = () => {
               renderItem={({ item }) => (
                 <View style={styles.cardContainer}>
                   <Text style={styles.textContainer}>
-                    {"Nombre del coin: " + item.id}
+                    {"Nombre del coin: " + item.name}
                   </Text>
                   <Text style={styles.textContainer}>
                     {" Precio actual: $" + item.current_price}
                   </Text>
                   <Text style={value24H(item.price_change_percentage_24h)}>
-                    {" Cambio de precio en las ultimas 24h: " +
+                    {" Cambio de precio en las últimas 24h: " +
                       item.price_change_percentage_24h +
                       "%"}
+                  </Text>
+                  <Text style={styles.textContainer}>
+                    {"Suminstro Máximo: " + item.max_supply}
                   </Text>
                   <Image
                     style={{ width: 35, height: 35 }}
